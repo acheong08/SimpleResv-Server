@@ -1,4 +1,4 @@
-module github.com/acheong08/SimpleResv
+module github.com/acheong08/SimpleResv-Server
 
 go 1.17
 

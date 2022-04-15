@@ -5,7 +5,7 @@ import (
 	_ "fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
-  configs "github.com/acheong08/SimpleResv/Data"
+  configs "github.com/acheong08/SimpleResv-Server/Data"
 	"crypto/sha512"
 	"encoding/hex"
 	"os"
