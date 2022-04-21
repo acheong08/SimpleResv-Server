@@ -10,16 +10,16 @@ func main() {
 	// Test database
 	db.ResetDB()
 	// Test authentication
-	if !db.AddUser("acheong@student.dalat.org", "Acheong08$$") {
+	if !db.AddUser("admin@example.com", "password") {
 		fmt.Println("Failed to add user")
 	}
-	authed := db.AuthUser("acheong@student.dalat.org", "Acheong08$$")
+	authed := db.AuthUser("admin@example.com", "wrong password")
 	if authed {
 		fmt.Println("Authenticated")
 	} else {
 		fmt.Println("Failed")
 	}
-	db.DeleteUser("admin@duti.tech")
+	db.DeleteUser("admin@example.com")
 	// Test items
 	db.AddItem("Macbook")
 	db.AddItem("iPad")
