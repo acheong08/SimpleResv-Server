@@ -6,7 +6,7 @@ type Item struct{
   Available bool
   Status string
 }
-type AdminItemRequest struct{
+type Request struct{
   Email string
   Password string
   Action string

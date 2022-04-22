@@ -32,7 +32,7 @@ func admin(w http.ResponseWriter, r *http.Request) {
 	// Read post body
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	// Convert JSON to struct
-	var request data.AdminItemRequest
+	var request data.Request
 	json.Unmarshal(reqBody, &request)
 	// Authenticate
 	if request.Email != "admin@example.com" {
@@ -62,7 +62,7 @@ func user(w http.ResponseWriter, r *http.Request) {
   // Read post body
 	reqBody, _ := ioutil.ReadAll(r.Body)
   // Convert JSON to struct
-	var request data.AdminItemRequest
+	var request data.Request
 	json.Unmarshal(reqBody, &request)
   // Authenticate
   if !db.AuthUser(request.Email, request.Password) {
@@ -80,7 +80,7 @@ func checkAuth(w http.ResponseWriter, r *http.Request) {
   // Read post body
 	reqBody, _ := ioutil.ReadAll(r.Body)
   // Convert JSON to struct
-	var request data.AdminItemRequest
+	var request data.Request
 	json.Unmarshal(reqBody, &request)
   if db.AuthUser(request.Email, request.Password){
     fmt.Fprintf(w, "true")
