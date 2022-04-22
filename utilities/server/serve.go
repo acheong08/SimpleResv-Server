@@ -51,6 +51,8 @@ func admin(w http.ResponseWriter, r *http.Request) {
       db.AddUser(request.AddEmail, request.AddPassword)
     case "DeleteUser":
       db.DeleteUser(request.AddEmail)
+    case "Reset":
+      db.ResetDB()
 		}
 	}
 }
@@ -74,6 +76,18 @@ func user(w http.ResponseWriter, r *http.Request) {
     }
   }
 }
+func checkAuth(w http.ResponseWriter, r *http.Request) {
+  // Read post body
+	reqBody, _ := ioutil.ReadAll(r.Body)
+  // Convert JSON to struct
+	var request data.AdminItemRequest
+	json.Unmarshal(reqBody, &request)
+  if db.AuthUser(request.Email, request.Password){
+    fmt.Fprintf(w, "true")
+  } else {
+    fmt.Fprintf(w, "false")
+  }
+}
 
 // Handler
 func handleRequests() {
@@ -81,6 +95,7 @@ func handleRequests() {
 	r.HandleFunc("/api/GetItems", getItems).Methods(http.MethodGet)
 	r.HandleFunc("/api/Admin", admin).Methods(http.MethodPost)
   r.HandleFunc("/api/User", user).Methods(http.MethodPost)
+  r.HandleFunc("/api/CheckAuth", checkAuth).Methods(http.MethodPost)
 	fmt.Println("Server started")
 	log.Fatal(http.ListenAndServe(configs.Port, r))
 }
