@@ -41,13 +41,13 @@ func userexists(email string) bool {
 	// Open database
 	db, err := sql.Open("sqlite3", configs.DBpath)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	// Read password from database with same email
 	sqlcmd := `SELECT hash FROM accounts WHERE email = ?`
 	statement, err := db.Prepare(sqlcmd)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	//Get result
 	var result string
@@ -72,17 +72,17 @@ func AddUser(email string, password string) bool {
 	// Open database
 	db, err := sql.Open("sqlite3", configs.DBpath)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	// Put email and password into database
 	sqlcmd := `INSERT INTO accounts(email, hash) VALUES (?,?)`
 	statement, err := db.Prepare(sqlcmd)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	_, err = statement.Exec(email, strhash)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	// Close database
 	db.Close()
@@ -96,17 +96,17 @@ func DeleteUser(email string) bool {
 	// Open database
 	db, err := sql.Open("sqlite3", configs.DBpath)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	// Put email and password into database
 	sqlcmd := `DELETE FROM accounts WHERE email = ?`
 	statement, err := db.Prepare(sqlcmd)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	_, err = statement.Exec(email)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	// Close database
 	db.Close()
@@ -119,13 +119,13 @@ func AuthUser(email string, password string) bool {
 	// Open database
 	db, err := sql.Open("sqlite3", configs.DBpath)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	// Read password from database with same email
 	sqlcmd := `SELECT hash FROM accounts WHERE email = ?`
 	statement, err := db.Prepare(sqlcmd)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	var result string
 	err = statement.QueryRow(email).Scan(&result)
@@ -138,71 +138,75 @@ func AuthUser(email string, password string) bool {
 }
 
 ///////////////////////////////////////// Booking system ////////////////////////////////////////////////
-func AddItem(name string) {
+func AddItem(name string) bool {
 	// Open database
 	db, err := sql.Open("sqlite3", configs.DBpath)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	// Insert new entry
 	sqlcmd := `INSERT INTO items(name, available, status) VALUES (?, ?, ?)`
 	statement, err := db.Prepare(sqlcmd)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	_, err = statement.Exec(name, true, "Available")
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
+	return true
 }
-func DeleteItem(id int) {
+func DeleteItem(id int) bool {
 	// Open database
 	db, err := sql.Open("sqlite3", configs.DBpath)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	// Delete by ID
 	sqlcmd := `DELETE FROM items WHERE id = ?`
 	statement, err := db.Prepare(sqlcmd)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	_, err = statement.Exec(id)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
+	return true
 }
-func ToggleItem(id int, available bool) {
+func ToggleItem(id int, available bool) bool {
 	// Open database
 	db, err := sql.Open("sqlite3", configs.DBpath)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	sqlcmd := `UPDATE items SET available = ? WHERE id = ?`
 	statement, err := db.Prepare(sqlcmd)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	_, err = statement.Exec(available, id)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
+	return true
 }
-func StatusItem(id int, status string) {
+func StatusItem(id int, status string) bool {
 	// Open database
 	db, err := sql.Open("sqlite3", configs.DBpath)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	sqlcmd := `UPDATE items SET status = ? WHERE id = ?`
 	statement, err := db.Prepare(sqlcmd)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	_, err = statement.Exec(status, id)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
+	return true
 }
 func GetItems() string {
 	// Open database

@@ -70,9 +70,11 @@ func user(w http.ResponseWriter, r *http.Request) {
   } else{
     switch request.Action {
     case "ToggleItem":
-      db.ToggleItem(request.Id, request.Available)
-    case "StatusItem":
-      db.StatusItem(request.Id, request.Status)
+      if db.ToggleItem(request.Id, request.Available) && db.StatusItem(request.Id, request.Status) {
+				fmt.Fprintf(w, "Done")
+      } else{
+				fmt.Fprintf(w, "Done")
+			}
     }
   }
 }
