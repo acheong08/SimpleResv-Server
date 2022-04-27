@@ -19,20 +19,20 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func ResetDB() {
+func ResetDB() bool {
 	//Delete database file
 	os.Remove(configs.DBpath)
 	//Create database and configure based on Schema
 	db, err := sql.Open("sqlite3", configs.DBpath)
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 	if _, err := db.Exec(configs.Schema); err != nil {
-		log.Fatal(err)
+		return false
 	}
 	//Close and unlock database
 	db.Close()
-
+	return true
 }
 
 /////////////////////////////////////// User functions /////////////////////////////////////////////////
@@ -138,19 +138,19 @@ func AuthUser(email string, password string) bool {
 }
 
 ///////////////////////////////////////// Booking system ////////////////////////////////////////////////
-func AddItem(name string) bool {
+func AddItem(name string, details string) bool {
 	// Open database
 	db, err := sql.Open("sqlite3", configs.DBpath)
 	if err != nil {
 		return false
 	}
 	// Insert new entry
-	sqlcmd := `INSERT INTO items(name, available, status) VALUES (?, ?, ?)`
+	sqlcmd := `INSERT INTO items(name, available, status, details) VALUES (?, ?, ?, ?)`
 	statement, err := db.Prepare(sqlcmd)
 	if err != nil {
 		return false
 	}
-	_, err = statement.Exec(name, true, "Available")
+	_, err = statement.Exec(name, true, "Available", details)
 	if err != nil {
 		return false
 	}
@@ -225,7 +225,7 @@ func GetItems() string {
 	// Loop through rows and extract data
 	for rows.Next() {
 		var item data.Item
-		if err := rows.Scan(&item.Id, &item.Name, &item.Available, &item.Status); err != nil {
+		if err := rows.Scan(&item.Id, &item.Name, &item.Details, &item.Available, &item.Status); err != nil {
 			log.Fatal(err)
 		}
 		items = append(items, item)

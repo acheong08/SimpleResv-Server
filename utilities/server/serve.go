@@ -24,7 +24,6 @@ import (
 // Default
 func getItems(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, db.GetItems())
-	fmt.Println("Items requested")
 }
 
 // Admin
@@ -42,17 +41,25 @@ func admin(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// Proceed if authentication succeeds
 		// Check action (AddItem, DeleteItem, AddUser, DeleteUser, ResetDB)
+		var status bool
 		switch request.Action {
 		case "AddItem":
-			db.AddItem(request.Name)
+			status = db.AddItem(request.Name, request.Details)
     case "DeleteItem":
-      db.DeleteItem(request.Id)
+      status = db.DeleteItem(request.Id)
     case "AddUser":
-      db.AddUser(request.AddEmail, request.AddPassword)
+      status = db.AddUser(request.AddEmail, request.AddPassword)
     case "DeleteUser":
-      db.DeleteUser(request.AddEmail)
+      status = db.DeleteUser(request.AddEmail)
     case "Reset":
-      db.ResetDB()
+      status = db.ResetDB()
+		default:
+			status = false
+		}
+		if status == false {
+			fmt.Fprintf(w, "Server Error")
+		} else {
+			fmt.Fprintf(w, "Success")
 		}
 	}
 }
@@ -71,7 +78,7 @@ func user(w http.ResponseWriter, r *http.Request) {
     switch request.Action {
     case "ToggleItem":
       if db.ToggleItem(request.Id, request.Available) && db.StatusItem(request.Id, request.Status) {
-				fmt.Fprintf(w, "Done")
+				fmt.Fprintf(w, "Failed")
       } else{
 				fmt.Fprintf(w, "Done")
 			}

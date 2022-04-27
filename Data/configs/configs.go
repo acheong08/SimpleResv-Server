@@ -10,6 +10,7 @@ const Schema string = `
   CREATE TABLE IF NOT EXISTS items (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
     name TEXT UNIQUE NOT NULL,
+    details TEXT,
     available BOOLEAN NOT NULL,
     status TEXT NOT NULL
   );
