@@ -103,5 +103,6 @@ func handleRequests() {
 }
 
 func Run() {
+	fmt.Println("Listening on " + string(configs.Port))
 	handleRequests()
 }
