@@ -2,11 +2,11 @@ package server
 
 // Native
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-  "encoding/json"
 )
 
 // Third party
@@ -34,7 +34,7 @@ func admin(w http.ResponseWriter, r *http.Request) {
 	var request data.Request
 	json.Unmarshal(reqBody, &request)
 	// Authenticate
-	if request.Email != "admin@example.com" {
+	if request.Email != configs.AdminEmail {
 		fmt.Fprintf(w, "Not admin")
 	} else if !db.AuthUser(request.Email, request.Password) {
 		fmt.Fprintf(w, "Authentication failed")
@@ -45,14 +45,14 @@ func admin(w http.ResponseWriter, r *http.Request) {
 		switch request.Action {
 		case "AddItem":
 			status = db.AddItem(request.Name, request.Details)
-    case "DeleteItem":
-      status = db.DeleteItem(request.Id)
-    case "AddUser":
-      status = db.AddUser(request.AddEmail, request.AddPassword)
-    case "DeleteUser":
-      status = db.DeleteUser(request.AddEmail)
-    case "Reset":
-      status = db.ResetDB()
+		case "DeleteItem":
+			status = db.DeleteItem(request.Id)
+		case "AddUser":
+			status = db.AddUser(request.AddEmail, request.AddPassword)
+		case "DeleteUser":
+			status = db.DeleteUser(request.AddEmail)
+		case "Reset":
+			status = db.ResetDB()
 		default:
 			status = false
 		}
@@ -66,36 +66,40 @@ func admin(w http.ResponseWriter, r *http.Request) {
 
 // User
 func user(w http.ResponseWriter, r *http.Request) {
-  // Read post body
+	// Read post body
 	reqBody, _ := ioutil.ReadAll(r.Body)
-  // Convert JSON to struct
+	// Convert JSON to struct
 	var request data.Request
 	json.Unmarshal(reqBody, &request)
-  // Authenticate
-  if !db.AuthUser(request.Email, request.Password) {
-    fmt.Fprintf(w, "Authentication failed")
-  } else{
-    switch request.Action {
-    case "ToggleItem":
-      if db.ToggleItem(request.Id, request.Available) && db.StatusItem(request.Id, request.Status) {
+	// Authenticate
+	if !db.AuthUser(request.Email, request.Password) {
+		fmt.Fprintf(w, "Authentication failed")
+	} else {
+		switch request.Action {
+		case "ToggleItem":
+			if db.ToggleItem(request.Id, request.Available) && db.StatusItem(request.Id, request.Status) {
 				fmt.Fprintf(w, "Failed")
-      } else{
+			} else {
 				fmt.Fprintf(w, "Done")
 			}
-    }
-  }
+		}
+	}
 }
 func checkAuth(w http.ResponseWriter, r *http.Request) {
-  // Read post body
+	// Read post body
 	reqBody, _ := ioutil.ReadAll(r.Body)
-  // Convert JSON to struct
+	// Convert JSON to struct
 	var request data.Request
 	json.Unmarshal(reqBody, &request)
-  if db.AuthUser(request.Email, request.Password){
-    fmt.Fprintf(w, "true")
-  } else {
-    fmt.Fprintf(w, "false")
-  }
+	if db.AuthUser(request.Email, request.Password) {
+		if request.Email == configs.AdminEmail {
+			fmt.Fprintf(w, "admin")
+		} else {
+			fmt.Fprintf(w, "true")
+		}
+	} else {
+		fmt.Fprintf(w, "false")
+	}
 }
 
 // Handler
@@ -103,8 +107,8 @@ func handleRequests() {
 	r := mux.NewRouter()
 	r.HandleFunc("/api/GetItems", getItems).Methods(http.MethodGet)
 	r.HandleFunc("/api/Admin", admin).Methods(http.MethodPost)
-  r.HandleFunc("/api/User", user).Methods(http.MethodPost)
-  r.HandleFunc("/api/CheckAuth", checkAuth).Methods(http.MethodPost)
+	r.HandleFunc("/api/User", user).Methods(http.MethodPost)
+	r.HandleFunc("/api/CheckAuth", checkAuth).Methods(http.MethodPost)
 	fmt.Println("Server started")
 	log.Fatal(http.ListenAndServe(configs.Port, r))
 }

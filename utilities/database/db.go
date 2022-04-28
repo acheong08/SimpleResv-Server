@@ -30,6 +30,8 @@ func ResetDB() bool {
 	if _, err := db.Exec(configs.Schema); err != nil {
 		return false
 	}
+	//Create admin user
+	AddUser(configs.AdminEmail, configs.AdminPassword)
 	//Close and unlock database
 	db.Close()
 	return true
