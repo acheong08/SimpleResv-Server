@@ -78,9 +78,9 @@ func user(w http.ResponseWriter, r *http.Request) {
 		switch request.Action {
 		case "ToggleItem":
 			if db.ToggleItem(request.Id, request.Available) && db.StatusItem(request.Id, request.Status) {
-				fmt.Fprintf(w, "Failed")
+				fmt.Fprintf(w, "Success")
 			} else {
-				fmt.Fprintf(w, "Done")
+				fmt.Fprintf(w, "Failed")
 			}
 		}
 	}
