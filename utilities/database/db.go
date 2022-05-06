@@ -138,6 +138,31 @@ func AuthUser(email string, password string) bool {
 		return false
 	}
 }
+func UserList() string {
+	// Open database
+	db, err := sql.Open("sqlite3", configs.DBpath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Get all data
+	rows, err := db.Query("SELECT email FROM accounts")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	// Slice to hold users
+	var accounts []data.Account
+	// Loop and save
+	for rows.Next() {
+		var account data.Account
+		if err := rows.Scan(&account.Email); err != nil {
+			log.Fatal(err)
+		}
+		accounts = append(accounts, account)
+	}
+	result, err := json.Marshal(accounts)
+	return string(result)
+}
 
 ///////////////////////////////////////// Booking system ////////////////////////////////////////////////
 func AddItem(name string, details string) bool {

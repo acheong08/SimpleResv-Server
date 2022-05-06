@@ -19,3 +19,6 @@ type Request struct {
 	AddEmail    string
 	AddPassword string
 }
+type Account struct {
+	Email string
+}

@@ -42,6 +42,7 @@ func admin(w http.ResponseWriter, r *http.Request) {
 		// Proceed if authentication succeeds
 		// Check action (AddItem, DeleteItem, AddUser, DeleteUser, ResetDB)
 		var status bool
+		var dontreturnstuff bool = false
 		switch request.Action {
 		case "AddItem":
 			status = db.AddItem(request.Name, request.Details)
@@ -53,13 +54,19 @@ func admin(w http.ResponseWriter, r *http.Request) {
 			status = db.DeleteUser(request.AddEmail)
 		case "Reset":
 			status = db.ResetDB()
+		case "GetAccounts":
+			status = true
+			dontreturnstuff = true
+			fmt.Fprintf(w, db.UserList())
 		default:
 			status = false
 		}
-		if status == false {
-			fmt.Fprintf(w, "Server Error")
-		} else {
-			fmt.Fprintf(w, "Success")
+		if dontreturnstuff == false {
+			if status == false {
+				fmt.Fprintf(w, "Server Error")
+			} else {
+				fmt.Fprintf(w, "Success")
+			}
 		}
 	}
 }
